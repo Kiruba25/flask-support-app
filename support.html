@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Support</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script>
+        async function sendMsg() {
+            let input = document.getElementById("msg");
+            let msg = input.value;
+
+            if(msg.trim() === "") return;
+
+            let chat = document.getElementById("chat");
+
+            // USER MESSAGE
+            chat.innerHTML += `
+                <div class="message user">
+                    <div class="bubble">${msg}</div>
+                </div>
+            `;
+
+            let res = await fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: "message=" + msg
+            });
+
+            let reply = await res.text();
+
+            // BOT MESSAGE
+            chat.innerHTML += `
+                <div class="message bot">
+                    <div class="bubble">${reply}</div>
+                </div>
+            `;
+
+            input.value = "";
+            chat.scrollTop = chat.scrollHeight;
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <div class="header">
+        🤖 Support Chat
+        <a href="tel:+911234567890" class="call-icon">📞</a>
+    </div>
+
+    <div id="chat" class="chat-box"></div>
+
+    <div class="input-box">
+        <input type="text" id="msg" placeholder="Type message...">
+        <button onclick="sendMsg()">➤</button>
+    </div>
+
+</div>
+
+</body>
+</html>
